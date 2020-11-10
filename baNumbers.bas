@@ -141,7 +141,7 @@ Rem <MKVBDEC>:baNumbers.dll
 '----------------------------------------------------------------------------
 ' SortInt - Sort a single-dimension VB integer array
 '
-Sub baSortInt Alias "baSortInt" (psa As Dword) Export
+Sub baSortInteger Alias "Integer" (psa As Dword) Export
 
     Local l  As Long
     Local u  As Long
@@ -248,7 +248,7 @@ Sub baSortCurrency Alias "baSortCurrency" (psa As Dword) Export
 End Sub
 '==============================================================================
 
-Function baMedianInt Alias "baMedianInt" (psa As Dword) Export As Integer
+Function baMedianInteger Alias "baMedianInteger" (psa As Dword) Export As Integer
 '------------------------------------------------------------------------------
 'Purpose  : Determines the median
 '

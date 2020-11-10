@@ -1,0 +1,17 @@
+# Compiler logs
+*.log
+
+# Ignore test projects
+*.vbw
+GetNumberFormatTest.*
+NumbersTest.*
+
+# Ignore archives
+*.zip
+*.rar
+
+# Binary files
+*.exe
+*.EXE
+*.dll
+*.DLL

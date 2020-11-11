@@ -6,10 +6,6 @@
 GetNumberFormatTest.*
 NumbersTest.*
 
-# Ignore archives
-*.zip
-*.rar
-
 # Binary files
 *.exe
 *.EXE

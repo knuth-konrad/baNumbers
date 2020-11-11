@@ -139,9 +139,35 @@ End Function
 '----------------------------------------------------------------------------
 Rem <MKVBDEC>:baNumbers.dll
 '----------------------------------------------------------------------------
-' SortInt - Sort a single-dimension VB integer array
+' SortByte - Sort a single-dimension VB byte array
 '
-Sub baSortInteger Alias "Integer" (psa As Dword) Export
+Sub baSortByte Alias "baSortByte" (psa As Dword, Optional ByVal lDescending As Long) Export
+
+    Local l  As Long
+    Local u  As Long
+    Local vb As Dword
+
+    Trace On
+
+    l  = vbArrayLBound(psa, 1)
+    u  = vbArrayUBound(psa, 1)
+    vb = vbArrayFirstElem(psa)
+
+    Dim vba(l To u) As Byte At vb
+
+    If IsTrue(lDescending) Then
+       Array Sort vba(), Descend
+    Else
+       Array Sort vba()
+    End If
+
+End Sub
+'==============================================================================
+
+'----------------------------------------------------------------------------
+' SortInteger - Sort a single-dimension VB integer array
+'
+Sub baSortInteger Alias "baSortInteger" (psa As Dword, Optional ByVal lDescending As Long) Export
 
     Local l  As Long
     Local u  As Long
@@ -155,7 +181,11 @@ Sub baSortInteger Alias "Integer" (psa As Dword) Export
 
     Dim vba(l To u) As Integer At vb
 
-    Array Sort vba()
+    If IsTrue(lDescending) Then
+       Array Sort vba(), Descend
+    Else
+       Array Sort vba()
+    End If
 
 End Sub
 '==============================================================================
@@ -163,7 +193,7 @@ End Sub
 '------------------------------------------------------------------------------
 ' SortLong - Sort a single-dimension VB long integer array
 '
-Sub baSortLong Alias "baSortLong" (psa As Dword) Export
+Sub baSortLong Alias "baSortLong" (psa As Dword, Optional ByVal lDescending As Long) Export
 
     Local l  As Long
     Local u  As Long
@@ -177,7 +207,11 @@ Sub baSortLong Alias "baSortLong" (psa As Dword) Export
 
     Dim vba(l To u) As Long At vb
 
-    Array Sort vba()
+    If IsTrue(lDescending) Then
+       Array Sort vba(), Descend
+    Else
+       Array Sort vba()
+    End If
 
 End Sub
 '==============================================================================
@@ -185,7 +219,7 @@ End Sub
 '------------------------------------------------------------------------------
 ' SortSingle - Sort a single-dimension VB single-precision array
 '
-Sub baSortSingle Alias "baSortSingle" (psa As Dword) Export
+Sub baSortSingle Alias "baSortSingle" (psa As Dword, Optional ByVal lDescending As Long) Export
 
     Local l  As Long
     Local u  As Long
@@ -199,7 +233,11 @@ Sub baSortSingle Alias "baSortSingle" (psa As Dword) Export
 
     Dim vba(l To u) As Single At vb
 
-    Array Sort vba()
+    If IsTrue(lDescending) Then
+       Array Sort vba(), Descend
+    Else
+       Array Sort vba()
+    End If
 
 End Sub
 '==============================================================================
@@ -207,7 +245,7 @@ End Sub
 '------------------------------------------------------------------------------
 ' SortDouble - Sort a single-dimension VB double-precision array
 '
-Sub baSortDouble Alias "baSortDouble" (psa As Dword) Export
+Sub baSortDouble Alias "baSortDouble" (psa As Dword, Optional ByVal lDescending As Long) Export
 
     Local l  As Long
     Local u  As Long
@@ -221,7 +259,11 @@ Sub baSortDouble Alias "baSortDouble" (psa As Dword) Export
 
     Dim vba(l To u) As Double At vb
 
-    Array Sort vba()
+    If IsTrue(lDescending) Then
+       Array Sort vba(), Descend
+    Else
+       Array Sort vba()
+    End If
 
 End Sub
 '==============================================================================
@@ -229,7 +271,7 @@ End Sub
 '------------------------------------------------------------------------------
 ' SortCurrency - Sort a single-dimension VB currency array
 '
-Sub baSortCurrency Alias "baSortCurrency" (psa As Dword) Export
+Sub baSortCurrency Alias "baSortCurrency" (psa As Dword, Optional ByVal lDescending As Long) Export
 
     Local l  As Long
     Local u  As Long
@@ -243,9 +285,70 @@ Sub baSortCurrency Alias "baSortCurrency" (psa As Dword) Export
 
     Dim vba(l To u) As Currency At vb
 
-    Array Sort vba()
+    If IsTrue(lDescending) Then
+       Array Sort vba(), Descend
+    Else
+       Array Sort vba()
+    End If
 
 End Sub
+'==============================================================================
+
+Function baMedianByte Alias "baMedianByte" (psa As Dword) Export As Byte
+'------------------------------------------------------------------------------
+'Purpose  : Determines the median
+'
+'Prereq.  : -
+'Parameter: -
+'Returns  : -
+'Note     : -
+'
+'   Author: Knuth Konrad 10.09.2014
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+   Local lRecCount, i, lCenter, lOffSet As Long
+   Local iX, iY As Byte
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Try
+      Dim vba(l To u) As Byte At vb
+   Catch
+      Function = 0
+      Exit Function
+   End Try
+
+   Array Sort vba()
+
+   If (LBound(vba) = 0) And (UBound(vba) = 0) Then
+      Function = vba(0)
+      Exit Function
+   End If
+
+   lRecCount = (UBound(vba) + 1) - (LBound(vba) + 1)
+   lCenter = lRecCount \ 2
+
+   If lCenter <> 0 Then
+      lOffSet = ((lRecCount + 1) / 2)
+      Function = vba(lOffSet)
+   Else
+      lOffSet = (lRecCount / 2)
+      iX = vba(lOffSet)
+      iY = vba(lOffSet + 1)
+      Function = CByt((iX + iY) / 2)
+   End If
+
+End Function
 '==============================================================================
 
 Function baMedianInteger Alias "baMedianInteger" (psa As Dword) Export As Integer
@@ -529,185 +632,6 @@ Function baMedianCurrency Alias "baMedianCurrency" (psa As Dword) Export As Curr
 End Function
 '==============================================================================
 
-Function baDuplicateIntegerArray Alias "baDuplicateIntegerArray" (psa As Dword, psd As Dword) Export As Long
-
-   Local l, l1  As Long
-   Local u, u1  As Long
-   Local vb, vb1 As Dword
-
-   Trace On
-
-   l  = vbArrayLBound(psa, 1) : l1  = vbArrayLBound(psd, 1)
-   u  = vbArrayUBound(psa, 1) : u1  = vbArrayUBound(psd, 1)
-   vb = vbArrayFirstElem(psa) : vb1 = vbArrayFirstElem(psd)
-
-   If (u1 - l1) < (u -l) Then
-
-      Function = %S_False
-      Exit Function
-
-   Else
-
-      Dim vba(l To u) As Integer At vb
-      Dim vbd(l1 To u1) As Integer At vb1
-
-      Try
-         Mat vbd() = vba()
-      Catch
-         Function = %S_False
-         Exit Function
-      End Try
-
-   End If
-
-   Function = %S_Ok
-
-End Function
-'==============================================================================
-
-Function baDuplicateLongArray Alias "baDuplicateLongArray" (psa As Dword, psd As Dword) Export As Long
-
-    Local l, l1  As Long
-    Local u, u1  As Long
-    Local vb, vb1 As Dword
-
-    Trace On
-
-    l  = vbArrayLBound(psa, 1) : l1  = vbArrayLBound(psd, 1)
-    u  = vbArrayUBound(psa, 1) : u1  = vbArrayUBound(psd, 1)
-    vb = vbArrayFirstElem(psa) : vb1 = vbArrayFirstElem(psd)
-
-   If (u1 - l1) < (u -l) Then
-
-      Function = %S_False
-      Exit Function
-
-   Else
-
-      Dim vba(l To u) As Integer At vb
-      Dim vbd(l1 To u1) As Integer At vb1
-
-      Try
-         Mat vbd() = vba()
-      Catch
-         Function = %S_False
-         Exit Function
-      End Try
-
-   End If
-
-   Function = %S_Ok
-
-End Function
-'==============================================================================
-
-Function baDuplicateSingleArray Alias "baDuplicateSingleArray" (psa As Dword, psd As Dword) Export As Long
-
-    Local l, l1  As Long
-    Local u, u1  As Long
-    Local vb, vb1 As Dword
-
-    Trace On
-
-    l  = vbArrayLBound(psa, 1) : l1  = vbArrayLBound(psd, 1)
-    u  = vbArrayUBound(psa, 1) : u1  = vbArrayUBound(psd, 1)
-    vb = vbArrayFirstElem(psa) : vb1 = vbArrayFirstElem(psd)
-
-   If (u1 - l1) < (u -l) Then
-
-      Function = %S_False
-      Exit Function
-
-   Else
-
-      Dim vba(l To u) As Integer At vb
-      Dim vbd(l1 To u1) As Integer At vb1
-
-      Try
-         Mat vbd() = vba()
-      Catch
-         Function = %S_False
-         Exit Function
-      End Try
-
-   End If
-
-   Function = %S_Ok
-
-End Function
-'==============================================================================
-
-Function baDuplicateDoubleArray Alias "baDuplicateDoubleArray" (psa As Dword, psd As Dword) Export As Long
-
-    Local l, l1  As Long
-    Local u, u1  As Long
-    Local vb, vb1 As Dword
-
-    Trace On
-
-    l  = vbArrayLBound(psa, 1) : l1  = vbArrayLBound(psd, 1)
-    u  = vbArrayUBound(psa, 1) : u1  = vbArrayUBound(psd, 1)
-    vb = vbArrayFirstElem(psa) : vb1 = vbArrayFirstElem(psd)
-
-   If (u1 - l1) < (u -l) Then
-
-      Function = %S_False
-      Exit Function
-
-   Else
-
-      Dim vba(l To u) As Integer At vb
-      Dim vbd(l1 To u1) As Integer At vb1
-
-      Try
-         Mat vbd() = vba()
-      Catch
-         Function = %S_False
-         Exit Function
-      End Try
-
-   End If
-
-   Function = %S_Ok
-
-End Function
-'==============================================================================
-
-Function baDuplicateCurrencyArray Alias "baDuplicateCurrencyArray" (psa As Dword, psd As Dword) Export As Long
-
-    Local l, l1  As Long
-    Local u, u1  As Long
-    Local vb, vb1 As Dword
-
-    Trace On
-
-    l  = vbArrayLBound(psa, 1) : l1  = vbArrayLBound(psd, 1)
-    u  = vbArrayUBound(psa, 1) : u1  = vbArrayUBound(psd, 1)
-    vb = vbArrayFirstElem(psa) : vb1 = vbArrayFirstElem(psd)
-   If (u1 - l1) < (u -l) Then
-
-      Function = %S_False
-      Exit Function
-
-   Else
-
-      Dim vba(l To u) As Integer At vb
-      Dim vbd(l1 To u1) As Integer At vb1
-
-      Try
-         Mat vbd() = vba()
-      Catch
-         Function = %S_False
-         Exit Function
-      End Try
-
-   End If
-
-   Function = %S_Ok
-
-End Function
-'==============================================================================
-
 Function baFormatNumber Alias "baFormatNumber" (ByVal curNumber As Currency, _
    ByVal wLangLocale As Word, ByVal wSubLangLocale As Word) Export As String
 
@@ -780,6 +704,44 @@ End Function
 Function LCIDFromLangID Alias "LCIDFromLangID" (ByVal dwLangID As Dword) Export As Dword
 
    LCIDFromLangID = MAKELCID(dwLangID, %SORT_DEFAULT)
+
+End Function
+'===========================================================================
+
+Function baSwapByte Alias "baSwapByte" (ByRef v1 As Byte, ByRef v2 As Byte) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Swaps the contents of two variables
+'
+'Prereq.  : -
+'Parameter: The two variables whose contens should be swapped
+'Returns  : %True (Success) or %False (Error/Failure)
+'Note     : -
+'
+'   Author: Knuth Konrad 19.04.2016
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local i, x, y As Long
+   Local s As String
+
+   Trace On
+   Trace Print FuncName$
+
+   For x = CallStkCount To 1 Step -1
+      s = s & CallStk$(x)
+   Next x
+   Trace Print s
+
+   Try
+      Swap v1, v2
+      baSwapByte = %True
+   Catch
+      baSwapByte = %False
+      Trace Print Error$(ErrClear)
+   End Try
+
+   Trace Off
 
 End Function
 '===========================================================================
@@ -1199,11 +1161,6 @@ Sub baRndRangeArray Alias "baRndRangeArray" (psa As Dword, ByVal lLower As Long,
 End Sub
 '===========================================================================
 
-
-'----------------------------------------------------------------------------
-Rem </MKVBDEC>
-'----------------------------------------------------------------------------
-
 'function GetNUMBERFMTForLCID(byval wLangID as word, byref udt as NUMBERFMTA) as long
 '
 'local wLCID as word
@@ -1225,38 +1182,196 @@ Rem </MKVBDEC>
 'end function
 '===========================================================================
 
-Function baFillIntegerArray Alias "baFillIntegerArray" (psa As Dword, psd As Dword, ByVal lDimensions As Long, ByVal iValue As Integer) Export As Long
+Function baSetByte Alias "baSetByte" (psa As Dword, ByVal value As Byte) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Set all elements of an array to value
+'
+'Prereq.  : -
+'Parameter: Value - Value to which all elements are set
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2020-11-11
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
 
-   Local l, l1  As Long
-   Local u, u1  As Long
-   Local vb, vb1 As Dword
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
 
    Trace On
 
-   l  = vbArrayLBound(psa, 1) : l1  = vbArrayLBound(psd, 1)
-   u  = vbArrayUBound(psa, 1) : u1  = vbArrayUBound(psd, 1)
-   vb = vbArrayFirstElem(psa) : vb1 = vbArrayFirstElem(psd)
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
 
-   If (u1 - l1) < (u -l) Then
+   Dim vba(l To u) As Byte At vb
 
+   Try
+      Mat vba() = Con(value)
+   Catch
       Function = %S_False
       Exit Function
-
-   Else
-
-      Dim vba(l To u) As Integer At vb
-      Dim vbd(l1 To u1) As Integer At vb1
-
-      Try
-         Mat vbd() = vba()
-      Catch
-         Function = %S_False
-         Exit Function
-      End Try
-
-   End If
+   End Try
 
    Function = %S_Ok
 
 End Function
 '==============================================================================
+
+Function baSetInteger Alias "baSetInteger" (psa As Dword, ByVal value As Integer) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Set all elements of an array to value
+'
+'Prereq.  : -
+'Parameter: Value - Value to which all elements are set
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2020-11-11
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Dim vba(l To u) As Integer At vb
+
+   Try
+      Mat vba() = Con(value)
+   Catch
+      Function = %S_False
+      Exit Function
+   End Try
+
+   Function = %S_Ok
+
+End Function
+'==============================================================================
+
+Function baSetLong Alias "baSetLong" (psa As Dword, ByVal value As Long) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Set all elements of an array to value
+'
+'Prereq.  : -
+'Parameter: Value - Value to which all elements are set
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2020-11-11
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Dim vba(l To u) As Long At vb
+
+   Try
+      Mat vba() = Con(value)
+   Catch
+      Function = %S_False
+      Exit Function
+   End Try
+
+   Function = %S_Ok
+
+End Function
+'==============================================================================
+
+Function baSetSingle Alias "baSetSingle" (psa As Dword, ByVal value As Single) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Set all elements of an array to value
+'
+'Prereq.  : -
+'Parameter: Value - Value to which all elements are set
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2020-11-11
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Dim vba(l To u) As Single At vb
+
+   Try
+      Mat vba() = Con(value)
+   Catch
+      Function = %S_False
+      Exit Function
+   End Try
+
+   Function = %S_Ok
+
+End Function
+'==============================================================================
+
+Function baSetDouble Alias "baSetDouble" (psa As Dword, ByVal value As Double) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Set all elements of an array to value
+'
+'Prereq.  : -
+'Parameter: Value - Value to which all elements are set
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2020-11-11
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Dim vba(l To u) As Double At vb
+
+   Try
+      Mat vba() = Con(value)
+   Catch
+      Function = %S_False
+      Exit Function
+   End Try
+
+   Function = %S_Ok
+
+End Function
+'==============================================================================
+
+'----------------------------------------------------------------------------
+Rem </MKVBDEC>
+'----------------------------------------------------------------------------

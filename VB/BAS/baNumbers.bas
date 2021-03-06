@@ -522,7 +522,7 @@ Declare Function Lng2Quad Lib "baNumbers.dll" (ByVal lValue As Long) As Currency
 Declare Function baRnd Lib "baNumbers.dll" () As Currency
 Declare Sub baRndArray Lib "baNumbers.dll" (a() As Currency)
 Declare Function baRndRange Lib "baNumbers.dll" (ByVal lLower As Long, ByVal lUpper As Long) As Long
-Declare Sub baRndRangeArray Lib "baNumbers.dll" (a() As Long, ByVal lLower As Long, ByVal lUpper As Long)
+Declare Sub baRndRangeArrayLong Lib "baNumbers.dll" (a() As Long, ByVal lLower As Long, ByVal lUpper As Long)
 '------------------------------------------------------------------------------
 '*** Variables ***
 '------------------------------------------------------------------------------

@@ -1127,7 +1127,7 @@ Function baRndRange Alias "baRndRange" (ByVal lLower As Long, ByVal lUpper As Lo
 End Function
 '===========================================================================
 
-Sub baRndRangeArray Alias "baRndRangeArray" (psa As Dword, ByVal lLower As Long, ByVal lUpper As Long) Export
+Sub baRndRangeArrayLong Alias "baRndRangeArrayLong" (psa As Dword, ByVal lLower As Long, ByVal lUpper As Long) Export
 '------------------------------------------------------------------------------
 'Purpose  : Fill an array with pseudo random numbers within the range of
 '           lLower <= x <= lUpper
@@ -1135,7 +1135,7 @@ Sub baRndRangeArray Alias "baRndRangeArray" (psa As Dword, ByVal lLower As Long,
 'Prereq.  : -
 'Parameter: lLower   - lowest number
 '           lUpper   - highest number
-'Returns  : Random number
+'Returns  : Array with random numbers
 'Note     : -
 '
 '   Author: Knuth Konrad 28.02.2017

@@ -48,6 +48,22 @@ Function baSetSingle (a() As Single, ByVal value As Single) As Boolean
 Function baSetDouble (a() As Double, ByVal value As Double) As Boolean
 ```
 
+### Fill a Currency array with random numbers
+
+This method fills a ```Currency``` array with random numbers within 0 &lt;= x &lt;= 1.
+
+```vb
+Sub baRndArray (a() As Currency)
+```
+
+### Fill a Long array with random numbers
+
+This method fills a ```Long``` array with random numbers within lLower &lt;= x &lt;= lUpper.
+
+```vb
+Sub baRndRangeArray (a() As Long, ByVal lLower As Long, ByVal lUpper As Long)
+```
+
 ---
 
 ## Numbers

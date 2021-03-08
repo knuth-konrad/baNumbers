@@ -2,13 +2,13 @@ VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.2#0"; "MSCOMCTL.OCX"
 Begin VB.Form Form1 
    Caption         =   "Form1"
-   ClientHeight    =   5910
+   ClientHeight    =   5904
    ClientLeft      =   120
-   ClientTop       =   450
-   ClientWidth     =   12030
+   ClientTop       =   456
+   ClientWidth     =   12036
    LinkTopic       =   "Form1"
-   ScaleHeight     =   5910
-   ScaleWidth      =   12030
+   ScaleHeight     =   5904
+   ScaleWidth      =   12036
    StartUpPosition =   3  'Windows-Standard
    Begin MSComctlLib.ListView ListView1 
       Height          =   5415
@@ -16,8 +16,8 @@ Begin VB.Form Form1
       TabIndex        =   13
       Top             =   240
       Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   9551
+      _ExtentX        =   14626
+      _ExtentY        =   9546
       View            =   3
       LabelWrap       =   -1  'True
       HideSelection   =   -1  'True
@@ -493,5 +493,40 @@ Private Sub Form_Load()
    
    Me.txtElements.Text = CStr(ARRAY_MAX)
    SetupListview ""
+   
+   
+   ReDim acctnum(1 To 5) As Byte
+   ReDim users$(1 To 5)
+
+   users$(1) = "zz"
+   users$(2) = "aa"
+   users$(3) = "yy"
+   users$(4) = "bb"
+   users$(5) = "xx"
+
+   acctnum(1) = 78
+   acctnum(2) = 98
+   acctnum(3) = 45
+   acctnum(4) = 32
+   acctnum(5) = 1
+   
+   Debug.Print "baArrayStringSet: " & baArrayStringSet(users(), 2)
+   Debug.Print "baArrayByteSet: " & baArrayByteSet(acctnum(), 1)
+   Debug.Print String$(3, "-")
+   
+   Dim i As Long
+   For i = 1 To 5
+      Debug.Print i; " AcctNum: "; acctnum(i); " Users: "; users(i)
+   Next i
+   Debug.Print String$(3, "-")
+   
+   Debug.Print "baSort2Arrays: " & CStr(baSort2Arrays(eArrayDataType.adtByte, eArrayDataType.adtString))
+   Debug.Print String$(3, "-")
+   
+   For i = 1 To 5
+      Debug.Print i; " AcctNum: "; acctnum(i); " Users: "; users(i)
+   Next i
+   Debug.Print String$(3, "-")
+   
    
 End Sub

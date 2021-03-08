@@ -64,6 +64,42 @@ This method fills a ```Long``` array with random numbers within lLower &lt;= x &
 Sub baRndRangeArray (a() As Long, ByVal lLower As Long, ByVal lUpper As Long)
 ```
 
+### Sort two arrays
+
+Sorts/reorders 2 arrays. The first array _a1()_ will be sorted. The second array _a2(_) however will have its array elements arranged as if they _"stick"_ to the first array, i.e. when _a1()_ is sorted and element _a1(1)_ has become element _a1(5)_ thereafter, _a2(1)_ now also will be _a2(5)_. The arrays may be of different data types.
+
+_Please note_: the second array **must** have _at least_ the same number of elements than the first array.
+
+#### Parameters
+
+- eDataType1, eDataType2  
+Data type of the respective array
+
+- bolDescending  
+If ```True```, sort array 1 descending order.
+
+```vb
+Enum eArrayDataType
+   adtByte = 0
+   adtCurrency = 1
+   adtDouble = 2
+   adtInteger = 3
+   adtLong = 4
+   adtSingle = 5
+   adtString = 6
+End Enum
+```
+
+```vb
+Function baSort2Arrays Lib "baNumbers.dll" (ByVal eDataType1 As eArrayDataType, eDataType2 As eArrayDataType, Optional ByVal bolDescending As Boolean = False) As Long
+```
+
+The function returns the following error codes:
+
+- 0 = Success
+- 1 = Invalid data type
+
+
 ---
 
 ## Numbers

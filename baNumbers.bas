@@ -6,9 +6,8 @@ Language       PB/WIN 10.04
 Date           10.09.2014
 Purpose        Numbers/Math helpers
 Update
-Command$
 
-Copyright (c)  2014-2020 by
+Copyright (c)  None
                Knuth Konrad
 ----------------------------------------------------------------------------
 #EndIf
@@ -20,7 +19,7 @@ Copyright (c)  2014-2020 by
 #Compile DLL ".\baNumbers.dll"
 
 #Dim All
-#Tools Off
+#Tools On
 #Debug Error On
 
 ' Version resource file
@@ -32,6 +31,17 @@ DefLng A-Z
 '*** CONSTANTS ***
 %S_Ok                                   = &H00000000
 %S_False                                = &H00000001
+
+%False = 0
+%True = Not %False
+
+%DATA_TYPE_BYTE = 0
+%DATA_TYPE_CURRENCY = 1
+%DATA_TYPE_DOUBLE = 2
+%DATA_TYPE_INTEGER = 3
+%DATA_TYPE_LONG = 4
+%DATA_TYPE_SINGLE = 5
+%DATA_TYPE_STRING = 6
 '----------------------------------------------------------------------------
 '*** #INCLUDEs ***
 #Include Once "WinNT.inc"
@@ -77,6 +87,15 @@ Union uLong2Quad
 End Union
 '----------------------------------------------------------------------------
 '*** VARIABELN ***
+' Global arrays for baSort2Arrays()
+
+Global gaByte1(), gaByte2() As Byte
+Global gaCurrency1(), gaCurrency2() As Double
+Global gaDouble1(), gaDouble2() As Double
+Global gaInteger1(),gaInteger2() As Integer
+Global gaLong1(), gaLong2() As Long
+Global gaSingle1(), gaSingle2() As Single
+Global gaString1(), gaString2() As String
 '----------------------------------------------------------------------------
 
 Function LibMain(ByVal hInstance   As Long, _
@@ -1220,6 +1239,44 @@ Function baSetByte Alias "baSetByte" (psa As Dword, ByVal value As Byte) Export 
 End Function
 '==============================================================================
 
+Function baSetDouble Alias "baSetDouble" (psa As Dword, ByVal value As Double) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Set all elements of an array to value
+'
+'Prereq.  : -
+'Parameter: Value - Value to which all elements are set
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2020-11-11
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Dim vba(l To u) As Double At vb
+
+   Try
+      Mat vba() = Con(value)
+   Catch
+      Function = %S_False
+      Exit Function
+   End Try
+
+   Function = %S_Ok
+
+End Function
+'==============================================================================
+
 Function baSetInteger Alias "baSetInteger" (psa As Dword, ByVal value As Integer) Export As Long
 '------------------------------------------------------------------------------
 'Purpose  : Set all elements of an array to value
@@ -1334,16 +1391,21 @@ Function baSetSingle Alias "baSetSingle" (psa As Dword, ByVal value As Single) E
 End Function
 '==============================================================================
 
-Function baSetDouble Alias "baSetDouble" (psa As Dword, ByVal value As Double) Export As Long
 '------------------------------------------------------------------------------
-'Purpose  : Set all elements of an array to value
+' Helper methods for baSort2Arrays()
+'------------------------------------------------------------------------------
+
+Function baArrayByteSet Alias "baArrayByteSet" (psa As Dword, ByVal lWhichArray As Long) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Create a PB array from VB
 '
 'Prereq.  : -
-'Parameter: Value - Value to which all elements are set
+'Parameter: psa - VB array
+'           lWhichArray - set array 1 or 2?
 'Returns  : True / False
 'Note     : -
 '
-'   Author: Knuth Konrad 2020-11-11
+'   Author: Knuth Konrad 2021-03-08
 '   Source: -
 '  Changed: -
 '------------------------------------------------------------------------------
@@ -1358,19 +1420,419 @@ Function baSetDouble Alias "baSetDouble" (psa As Dword, ByVal value As Double) E
    u  = vbArrayUBound(psa, 1)
    vb = vbArrayFirstElem(psa)
 
-   Dim vba(l To u) As Double At vb
+   Select Case lWhichArray
+   Case 1
+      Try
+         ReDim gaByte1(l To u) As Byte At vb
+      Catch
+         Trace Print "Err: " & Format$(Err) & ", " & Error$(Err)
+         Function = %False
+         Exit Function
+      End Try
+   Case 2
+      Try
+         ReDim gaByte1(l To u) As Byte At vb
+      Catch
+         Trace Print "Err: " & Format$(Err) & ", " & Error$(Err)
+         Function = %False
+         Exit Function
+      End Try
+   Case Else
+      Function = %False
+   End Select
 
-   Try
-      Mat vba() = Con(value)
-   Catch
-      Function = %S_False
+   Function = %True
+
+End Function
+'==============================================================================
+
+Function baArrayCurrencySet Alias "baArrayCurrencySet" (psa As Dword, ByVal lWhichArray As Long) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Create a PB array from VB
+'
+'Prereq.  : -
+'Parameter: psa - VB array
+'           lWhichArray - set array 1 or 2?
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2021-03-08
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Select Case lWhichArray
+   Case 1
+      Try
+         ReDim gaCurrency1(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case 2
+      Try
+         ReDim gaCurrency2(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case Else
+      Function = %False
+   End Select
+
+   Function = %True
+
+End Function
+'==============================================================================
+
+Function baArrayDoubleSet Alias "baArrayDoubleSet" (psa As Dword, ByVal lWhichArray As Long) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Create a PB array from VB
+'
+'Prereq.  : -
+'Parameter: psa - VB array
+'           lWhichArray - set array 1 or 2?
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2021-03-08
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Select Case lWhichArray
+   Case 1
+      Try
+         ReDim gaDouble1(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case 2
+      Try
+         ReDim gaDouble2(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case Else
+      Function = %False
+   End Select
+
+   Function = %True
+
+End Function
+'==============================================================================
+
+Function baArrayIntegerSet Alias "baArrayIntegerSet" (psa As Dword, ByVal lWhichArray As Long) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Create a PB array from VB
+'
+'Prereq.  : -
+'Parameter: psa - VB array
+'           lWhichArray - set array 1 or 2?
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2021-03-08
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Select Case lWhichArray
+   Case 1
+      Try
+         ReDim gaInteger1(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case 2
+      Try
+         ReDim gaInteger2(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case Else
+      Function = %False
+   End Select
+
+   Function = %True
+
+End Function
+'==============================================================================
+
+Function baArrayLongSet Alias "baArrayLongSet" (psa As Dword, ByVal lWhichArray As Long) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Create a PB array from VB
+'
+'Prereq.  : -
+'Parameter: psa - VB array
+'           lWhichArray - set array 1 or 2?
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2021-03-08
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Select Case lWhichArray
+   Case 1
+      Try
+         ReDim gaLong1(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case 2
+      Try
+         ReDim gaLong2(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case Else
+      Function = %False
+   End Select
+
+   Function = %True
+
+End Function
+'==============================================================================
+
+Function baArraySingleSet Alias "baArraySingleSet" (psa As Dword, ByVal lWhichArray As Long) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Create a PB array from VB
+'
+'Prereq.  : -
+'Parameter: psa - VB array
+'           lWhichArray - set array 1 or 2?
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2021-03-08
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Select Case lWhichArray
+   Case 1
+      Try
+         ReDim gaSingle1(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case 2
+      Try
+         ReDim gaSingle2(l To u) As Byte At vb
+      Catch
+         Function = %False
+         Exit Function
+      End Try
+   Case Else
+      Function = %False
+   End Select
+
+   Function = %True
+
+End Function
+'==============================================================================
+
+Function baArrayStringSet Alias "baArrayStringSet" (psa As Dword, ByVal lWhichArray As Long) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Create a PB array from VB
+'
+'Prereq.  : -
+'Parameter: psa - VB array
+'           lWhichArray - set array 1 or 2?
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2021-03-08
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Local l  As Long
+   Local u  As Long
+   Local vb As Dword
+
+   Trace On
+
+   l  = vbArrayLBound(psa, 1)
+   u  = vbArrayUBound(psa, 1)
+   vb = vbArrayFirstElem(psa)
+
+   Select Case lWhichArray
+   Case 1
+      Try
+         ReDim gaString1(l To u) As Byte At vb
+      Catch
+         Trace Print "Err: " & Format$(Err) & ", " & Error$(Err)
+         Function = %False
+         Exit Function
+      End Try
+   Case 2
+      Try
+         ReDim gaString2(l To u) As Byte At vb
+      Catch
+         Trace Print "Err: " & Format$(Err) & ", " & Error$(Err)
+         Function = %False
+         Exit Function
+      End Try
+   Case Else
+      Function = %False
+   End Select
+
+   Function = %True
+
+End Function
+'==============================================================================
+
+Function baSort2Arrays Alias "baSort2Arrays" (ByVal lArrayType1 As Long, _
+   ByVal lArrayType2 As Long, Optional ByVal lDescending As Long) Export As Long
+'------------------------------------------------------------------------------
+'Purpose  : Sorts/reorders 2 arrays. The first array (ps1) will be sorted.
+'           The second array however (ps2) will have its array elements arranged
+'           as if they "stick" to the first element, i.e. when ps1 is sorted and
+'           ps1(1) has become ps1(5) thereafter, ps2(1) now also will be ps2(5)
+'
+'Prereq.  : -
+'Parameter: lArrayType1, lArrayType2 - Data types of the VB arrays
+'Returns  : True / False
+'Note     : -
+'
+'   Author: Knuth Konrad 2021-03-08
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+
+'%DATA_TYPE_BYTE = 0
+'%DATA_TYPE_CURRENCY = 1
+'%DATA_TYPE_DOUBLE = 2
+'%DATA_TYPE_INTEGER = 3
+'%DATA_TYPE_LONG = 4
+'%DATA_TYPE_SINGLE = 5
+'%DATA_TYPE_STRING = 6
+
+
+   ' ** ToDo:
+   ' - How to pass back the sorted arrays?
+   ' Check that array2's size is >= array1's size
+   ' - Don't erase array contents in the baArrayXXXSet methods, as that may erase user input
+
+   Local l1, l2  As Long
+   Local u1, u2  As Long
+   Local vb1, vb2 As Dword
+
+   Trace On
+
+   Trace Print "Array types: " & Format$(lArrayType1) & ", " & Format$(lArrayType2)
+
+   Select Case lArrayType1
+   Case %DATA_TYPE_BYTE
+
+      Select Case lArrayType2
+      Case %DATA_TYPE_BYTE
+         If IsFalse(lDescending) Then
+            Array Sort gaByte1(), TagArray gaByte2()
+         Else
+            Array Sort gaByte1(), TagArray gaByte2(), Descend
+         End If
+
+      Case %DATA_TYPE_CURRENCY
+         If IsFalse(lDescending) Then
+            Array Sort gaByte1(), TagArray gaDouble2()
+         Else
+            Array Sort gaByte1(), TagArray gaDouble2(), Descend
+         End If
+
+      Case %DATA_TYPE_DOUBLE
+      Case %DATA_TYPE_INTEGER
+      Case %DATA_TYPE_LONG
+      Case %DATA_TYPE_SINGLE
+      Case %DATA_TYPE_STRING
+         If IsFalse(lDescending) Then
+            Array Sort gaByte1(), TagArray gaString2()
+         Else
+            Array Sort gaByte1(), TagArray gaString2(), Descend
+         End If
+
+      Case Else
+         Function = 1
+         Exit Function
+      End Select  '// Case lArrayType2
+
+   Case %DATA_TYPE_CURRENCY
+   Case %DATA_TYPE_DOUBLE
+   Case %DATA_TYPE_INTEGER
+   Case %DATA_TYPE_LONG
+   Case %DATA_TYPE_SINGLE
+   Case %DATA_TYPE_STRING
+   Case Else
+      Function = 1
       Exit Function
-   End Try
+   End Select  '// Case lArrayType1
 
    Function = %S_Ok
 
 End Function
 '==============================================================================
+
 
 '----------------------------------------------------------------------------
 Rem </MKVBDEC>

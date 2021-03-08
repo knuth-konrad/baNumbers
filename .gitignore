@@ -6,6 +6,9 @@
 GetNumberFormatTest.*
 NumbersTest.*
 
+# Debug logs
+*.tra
+
 # Binary files
 *.exe
 *.EXE

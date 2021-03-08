@@ -3,7 +3,7 @@ Attribute VB_Name = "baNumbers"
 'Purpose  : Number helpers - sorting, formatting
 '
 'Prereq.  : -
-'Note     : -
+'Note     : See https://github.com/knuth-konrad/baNumbers for documentation
 '
 '   Author: Knuth Konrad 13.03.2015
 '   Source: -
@@ -462,6 +462,17 @@ Public Enum eVariantType
    vtArray = &H2000              ' %VT_ARRAY
    vtByRef = &H4000              ' %VT_BYREF (A reference value)
 End Enum
+
+' Array data type identifier used by baSort2Arrays()
+Public Enum eArrayDataType
+   adtByte = 0
+   adtCurrency = 1
+   adtDouble = 2
+   adtInteger = 3
+   adtLong = 4
+   adtSingle = 5
+   adtString = 6
+End Enum
 '------------------------------------------------------------------------------
 '*** Declares ***
 '------------------------------------------------------------------------------
@@ -523,6 +534,22 @@ Declare Function baRnd Lib "baNumbers.dll" () As Currency
 Declare Sub baRndArray Lib "baNumbers.dll" (a() As Currency)
 Declare Function baRndRange Lib "baNumbers.dll" (ByVal lLower As Long, ByVal lUpper As Long) As Long
 Declare Sub baRndRangeArrayLong Lib "baNumbers.dll" (a() As Long, ByVal lLower As Long, ByVal lUpper As Long)
+
+' *** Helper methods for baSort2Arrays()
+' Each of the following methods is used to set 1 of 2 arrays that then
+' will be used with method baSort2Arrays(). Your code must therefore consist
+' of two baArray<DataType>Set lines *before* you call baSort2Arrays()
+' Both array also most have the same number of dimensions and elements.
+Declare Function baArrayByteSet Lib "baNumbers.dll" (a() As Byte, ByVal WhichArray As Long) As Boolean
+Declare Function baArrayCurrencySet Lib "baNumbers.dll" (a() As Currency, ByVal WhichArray As Long) As Boolean
+Declare Function baArrayDoubleSet Lib "baNumbers.dll" (a() As Double, ByVal WhichArray As Long) As Boolean
+Declare Function baArrayIntegerSet Lib "baNumbers.dll" (a() As Integer, ByVal WhichArray As Long) As Boolean
+Declare Function baArraySingleSet Lib "baNumbers.dll" (a() As Single, ByVal WhichArray As Long) As Boolean
+Declare Function baArrayStringSet Lib "baNumbers.dll" (a() As String, ByVal WhichArray As Long) As Boolean
+
+Declare Function baSort2Arrays Lib "baNumbers.dll" (ByVal eDataType1 As eArrayDataType, _
+   eDataType2 As eArrayDataType, Optional ByVal bolDescending As Boolean = False) As Long
+
 '------------------------------------------------------------------------------
 '*** Variables ***
 '------------------------------------------------------------------------------

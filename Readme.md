@@ -97,8 +97,7 @@ Function baSort2Arrays Lib "baNumbers.dll" (ByVal eDataType1 As eArrayDataType, 
 The function returns the following error codes:
 
 - 0 = Success
-- 1 = Invalid data type
-
+- 1 = Invalid data type passed in ```eDataType```
 
 ---
 

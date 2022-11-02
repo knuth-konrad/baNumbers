@@ -6,6 +6,9 @@
 GetNumberFormatTest.*
 NumbersTest.*
 
+# Editor backups
+Backup.*
+
 # Debug logs
 *.tra
 

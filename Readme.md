@@ -23,6 +23,8 @@ Sub baSortLong(a() As Long)
 Sub baSortSingle(a() As Single)
 ```
 
+---
+
 ### Median
 
 Each of the following methods takes an array of the respective data type as input and computes and returns the median of the array contents.
@@ -36,6 +38,8 @@ Function baMedianLong(a() As Long) As Long
 Function baMedianSingle(a() As Single) As Single
 ```
 
+---
+
 ### Set all elements to (value)
 
 Each of the following methods takes an array of the respective data type as input and sets all array elements to the provided value. _Please note:_ the ```Currency``` data type is not supported.
@@ -47,6 +51,8 @@ Function baSetLong(a() As Long, ByVal value As Long) As Boolean
 Function baSetSingle (a() As Single, ByVal value As Single) As Boolean
 Function baSetDouble (a() As Double, ByVal value As Double) As Boolean
 ```
+
+---
 
 ### Fill a Currency array with random numbers
 
@@ -63,6 +69,8 @@ This method fills a ```Long``` array with random numbers within lLower &lt;= x &
 ```vb
 Sub baRndRangeArray (a() As Long, ByVal lLower As Long, ByVal lUpper As Long)
 ```
+
+---
 
 ### Sort two arrays
 
@@ -101,6 +109,21 @@ The function returns the following error codes:
 
 ---
 
+### Search arrays
+
+Each of the following methods takes an array of the respective data type as input and sorts the array data in ascending order. Please note that the array is passed ```ByRef```, i.e. the original array will be altered.
+
+```vb
+Sub baSortByte(a() As Byte)
+Sub baSortCurrency(a() As Currency)
+Sub baSortDouble(a() As Double)
+Sub baSortInteger(a() As Integer)
+Sub baSortLong(a() As Long)
+Sub baSortSingle(a() As Single)
+```
+
+---
+
 ## Numbers
 
 ### Fraction
@@ -112,6 +135,8 @@ Function baFracCur(ByVal curValue As Currency) As Currency
 Function baFracDouble(ByVal dblValue As Double) As Double
 Function baFracSingle(ByVal fValue As Single) As Single
 ```
+
+---
 
 ### Swapping
 
@@ -126,6 +151,8 @@ Function baSwapLong(ByRef v1 As Long, ByRef v2 As Long) As Boolean
 Function baSwapSingle(ByRef v1 As Single, ByRef v2 As Single) As Boolean
 ```
 
+---
+
 ### Signed to unsigned integer
 
 The following methods return the unsigned value of a (negative) signed integer value, i.e. ```Integer``` to ```Word``` etc.
@@ -137,6 +164,8 @@ Function Int2DWrd(ByVal iValue As Integer) As Currency
 Function Lng2DWrd(ByVal lValue As Long) As Currency
 Function Lng2Quad(ByVal lValue As Long) As Currency
 ```
+
+---
 
 ### (Locale) Formatting
 
